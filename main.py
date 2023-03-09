@@ -2,7 +2,8 @@
 # NB (NUKS) 7. 3. 2023
 
 from typing import Union
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Response, Request, HTTPException
+from fastapi_versioning import version, VersionedFastAPI
 from db import engine, Base, Fragment
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -18,8 +19,9 @@ def read_root():
     #return {"sporočilo": "Pozdrav."}
     return "Domača stran Delilnice"
 
-@app.post("/add")
-def add_fragment(frag: schemas.Fragment, request: Request):
+@app.post("/add", status_code=201)
+@version(1)
+def add_fragment(frag: schemas.Fragment, request: Request, response: Response):
     """Dodaj nov fragment"""
 
     client_host = request.client.host
@@ -41,6 +43,7 @@ def add_fragment(frag: schemas.Fragment, request: Request):
     return f"Vnašam fragment, oznaka {str(fragment.id)}"
 
 @app.get("/fragment/{id}")
+@version(1)
 def retrieve_fragment(id: int, response: Response):
     """Pridobi fragment po podanem ID-ju"""
 
@@ -52,13 +55,17 @@ def retrieve_fragment(id: int, response: Response):
             frag_list.append(frag)
 
     if len(frag_list) < 1:
-        response.status_code = 404
+        #response.status_code = 404
         # TODO tudi za is_private
+
+        raise HTTPException(status_code=404, detail=f"Fragment {id} ne obstaja.")
+
         return "Ta fragment ne obstaja"
 
     return frag_list
 
 @app.get("/author/{author}")
+@version(1)
 def retrieve_fragments_from_author(author: str, response: Response):
     """Pridobi vse fragmente želenega avtorja"""
 
@@ -77,22 +84,30 @@ def retrieve_fragments_from_author(author: str, response: Response):
 
     return frag_list
 
+# https://stackoverflow.com/questions/31624530/return-sqlalchemy-results-as-dicts-instead-of-lists
 @app.get("/all_fragments")
-def retrieve_all_fragments():
+@version(1)
+def retrieve_all_fragments(only_meta: bool=False):
     """Pridobi vse javne fragmente"""
 
     frag_list = []
-    statement = select(Fragment).where(Fragment.is_private==False)
+    if not only_meta:
+        statement = select(Fragment).where(Fragment.is_private==False)
+    else:
+        #statement = select(Fragment).where(Fragment.is_private==False).filter(Fragment.author=="nejc")
+        statement = select(Fragment.id, Fragment.title, Fragment.author, Fragment.ip_addr).where(Fragment.is_private==False)
     with Session(engine) as session:
-        for frag in session.scalars(statement):
-            frag_list.append(frag)
+        for frag in session.execute(statement):
+            frag_list.append(frag._asdict())
 
     if len(frag_list) < 1:
         return "Fragmentov še ni..."
 
     return frag_list
 
+app = VersionedFastAPI(app, version_format="{major}", prefix_format="/v{major}")
 # @app.delete("/delete/{id}")
+#@version(1)
 # def delete_fragment(id: int):
 #     """Izbriši fragment"""
 #
