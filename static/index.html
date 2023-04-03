@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block jedro %}
+
+<h1>Delilnica</h1>
+<p>Tukaj je, enostavna metoda za deljenje raznoraznih programskih in besedilnih izsekov, imenovanih <b>fragmenti</b>.</p>
+<hr>
+
+<div id="fragment">
+	<h2>Dodaj fragment</h2>
+	<form method="POST" action="/v1/add">
+		<div>
+			<label for="title">Naslov</label>
+			<br>
+			<input name="title" id="title">
+		</div>
+
+		<div>
+			<label for="author">Avtor</label>
+			<br>
+			<input name="author" id="author" value="">
+		</div>
+
+		<div>
+			<label for="text">Jedro</label>
+			<br>
+			<textarea name="text" id="text" cols="30" rows="10" v-model="text"></textarea>
+			<br>
+			<label for="is_private">Fragment je zaseben</label>
+			<input name="is_private" id="is_private" type="checkbox">
+		</div>
+
+		<div>
+			<input type="submit">
+		</div>
+	</form>
+</div>
+{% endblock jedro %}

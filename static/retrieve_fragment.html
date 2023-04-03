@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block jedro %}
+
+<div id="fragment">
+{% if retval.success %}
+	<h2>{{ retval.fragment.title }}</h2>
+	<p>Avtor: {{ retval.fragment.author }}
+	<div>{{ retval.fragment.text }}</div>
+{% else %}
+	<h2>Napaka</h2>
+{% endif %}
+
+</div>
+{% endblock jedro %}
