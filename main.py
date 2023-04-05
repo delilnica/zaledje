@@ -97,10 +97,8 @@ def retrieve_fragments_from_author(author: str, response: Response):
 
     if len(frag_list) < 1:
         response.status_code = 404
-        print("NAPAKA - avtor nima fragmentov")
         return {"success": False, "reason": "Ta avtor nima lastnih fragmentov."}
 
-    print(f"USPEH - {frag_list}")
     return {"success": True, "fragments": frag_list}
 
 # https://stackoverflow.com/questions/31624530/return-sqlalchemy-results-as-dicts-instead-of-lists
@@ -120,10 +118,8 @@ def retrieve_all_fragments(only_meta: bool=False):
             frag_list.append(frag._asdict())
 
     if len(frag_list) < 1:
-        print("NAPAKA - v zbirki ni nobenih fragmentov")
         return {"success": False, "reason": "V zbirki še ni fragmentov."}
 
-    print(f"USPEH - {frag_list}")
     return {"success": True, "fragments": frag_list}
 
 app = VersionedFastAPI(app, version_format="{major}", prefix_format="/v{major}")
