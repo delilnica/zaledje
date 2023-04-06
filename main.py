@@ -29,11 +29,11 @@ origins = [
     "http://localhost:8001",
 ]
 
-# @app.get("/")
-# @version(1)
-# def home_page(request: Request):
-#     """Domača stran Delilnice"""
-#     return "To pa ne gre..."
+@app.get("/")
+@version(1)
+def home_page(request: Request):
+    """Opozori za neobstoječo domačo stran zaledja"""
+    return {"success": False, "reason": "Zaledje nima svoje domače strani."}
 
 @app.post("/add", status_code=201)
 @version(1)
