@@ -16,14 +16,14 @@ Delilnica je spletna storitev za deljenje izsekov besedila in programske kode.
   Vrnjene vrednosti:
 
   * `success` - logična vrednost za uspešnost operacije
-  * `id` če `success == True` - enolična oznaka fragmenta
+  * `fid` če `success == True` - enolična oznaka fragmenta (šestznakovni besedilni niz)
 
 
 - `/fragment/{id}` (GET) - pridobi obstoječ fragment
 
   Zahtevan parameter:
 
-  * `id` - enolična oznaka fragmenta, pridobljena po dodajanju
+  * `fid` - enolična oznaka fragmenta, pridobljena po dodajanju (besedilni niz)
 
   Vrnjene vrednosti:
 
@@ -75,3 +75,8 @@ $ pip3 install -r requirements.txt
 
 $ uvicorn --reload --host 0.0.0.0 main:app
 ```
+
+## Dobitek enolične oznake fragmenta
+
+Za oznako `fid` to zaledje uporablja zunanjo storitev (`delilnica-idgen`). Klic nje brez dodatnih
+parametrov vrne enoličen, šestznakoven besedilni niz (primer: `tdkm9k`).
