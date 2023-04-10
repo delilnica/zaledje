@@ -2,6 +2,10 @@
 
 Delilnica je spletna storitev za deljenje izsekov besedila in programske kode.
 
+**URL** (delovanje ni zagotovljeno): 
+<http://nuks.bertoncelj.eu.org:8000/>{ukaz}.
+
+
 ## Končne točke
 
 - `/add` (POST) - dodaj nov fragment
