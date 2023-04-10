@@ -20,6 +20,7 @@ class Fragment(Base):
 
     # Metapodatki
     id          = Column(Integer, primary_key=True)
+    fid         = Column(String)
     ip_addr     = Column(String)
     expiry_date = Column(String) #DateTime
 

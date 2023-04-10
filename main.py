@@ -22,11 +22,17 @@ Base.metadata.create_all(engine)
 # Javno izpostavljeni parametri APIja iz schemas.py
 import schemas
 
+# HTTP zahtevki
+import requests
+
+# IDGEN_URL = "http://localhost:8080/function/delilnica-idgen"
+IDGEN_URL = "http://nuks.bertoncelj.eu.org:8080/function/delilnica-idgen"
+
 app = FastAPI()
 
 origins = [
     "http://localhost:8000",
-    "http://localhost:8001",
+    "http://localhost:8001"
 ]
 
 @app.get("/")
@@ -40,10 +46,11 @@ def home_page(request: Request):
 def add_fragment(frag: schemas.Fragment, request: Request, response: Response):
     """Dodaj nov fragment"""
     client_host = request.client.host
+    fragment_id = retrieve_fragment_id()
 
-    #session = Session(bind=engine, expire_on_commit=False)
     with Session(engine, expire_on_commit=False) as session:
         fragment = Fragment(
+            fid=fragment_id,
             ip_addr=str(client_host),
             expiry_date="-",
             title=frag.title,
@@ -55,16 +62,16 @@ def add_fragment(frag: schemas.Fragment, request: Request, response: Response):
         session.add(fragment)
         session.commit()
 
-    return {"success": True, "id": fragment.id}
+    return {"success": True, "id": fragment.id, "fid": fragment.fid}
 
-@app.get("/fragment/{id}")
+@app.get("/fragment/{fid}")
 @version(1)
-def retrieve_fragment(id: int, request: Request, response: Response):
+def retrieve_fragment(fid: str, request: Request, response: Response):
     """Pridobi fragment po podanem ID-ju"""
 
     frag_list = []
 
-    statement = select(Fragment).where(Fragment.id==id)
+    statement = select(Fragment).where(Fragment.fid==fid)
     with Session(engine) as session:
         for frag in session.scalars(statement):
             frag_list.append(frag)
@@ -73,7 +80,7 @@ def retrieve_fragment(id: int, request: Request, response: Response):
         response.status_code = 404
         # TODO tudi za is_private
 
-        # raise HTTPException(status_code=404, detail=f"Fragment {id} ne obstaja.")
+        # raise HTTPException(status_code=404, detail=f"Fragment {fid} ne obstaja.")
 
         retval = {"success": False, "reason": "Ta fragment ne obstaja."}
     else:
@@ -112,7 +119,7 @@ def retrieve_all_fragments(only_meta: bool=False):
         statement = select(Fragment).where(Fragment.is_private==False)
     else:
         #statement = select(Fragment).where(Fragment.is_private==False).filter(Fragment.author=="nejc")
-        statement = select(Fragment.id, Fragment.title, Fragment.author, Fragment.ip_addr).where(Fragment.is_private==False)
+        statement = select(Fragment.fid, Fragment.title, Fragment.author, Fragment.ip_addr).where(Fragment.is_private==False)
     with Session(engine) as session:
         for frag in session.execute(statement):
             frag_list.append(frag._asdict())
@@ -130,3 +137,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def retrieve_fragment_id():
+    r = requests.get(IDGEN_URL, timeout=5.0)
+    r.raise_for_status()
+
+    return r.text
