@@ -7,7 +7,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 
-engine = create_engine("sqlite+pysqlite:///delilnica.db", echo=False)
+engine = create_engine("sqlite+pysqlite:///baza/delilnica.db", echo=False)
 Base = declarative_base()
 
 class Fragment(Base):
