@@ -1,9 +1,8 @@
-# Delilnica
+# Zaledje za Delilnico
 
-Delilnica je spletna storitev za deljenje izsekov besedila in programske kode.
+Aplikacijski vmesnik, izdelan v ogrodju FastAPI, ki streže ospredju in komunicira z bazo.
 
-**URL** (delovanje ni zagotovljeno): 
-<http://nuks.bertoncelj.eu.org:8000/>{ukaz}.
+**URL**: <http://nuks.bertoncelj.eu.org:8000/>{ukaz}.
 
 
 ## Končne točke
