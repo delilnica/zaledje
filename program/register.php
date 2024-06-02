@@ -27,7 +27,7 @@ function uporabnik_dodaj()
 
 	if (!isset($vhod["vzdevek"], $vhod["enaslov"], $vhod["geslo"])) {
 		http_response_code(400); // Bad Request
-		json_odgovor("Ključna polja manjkajo.", 3);
+		json_odgovor("Ključna polja manjkajo.", __LINE__);
 		return -1;
 	}
 
@@ -42,8 +42,8 @@ function uporabnik_dodaj()
 	$n_vrstic = mysqli_num_rows($rez);
 
 	if ($n_vrstic > 0) {
-		// http_response_code(404);
-		json_odgovor("Uporabnik s tem vzdevkom že obstaja.", 32);
+		http_response_code(500);
+		json_odgovor("Uporabnik s tem vzdevkom že obstaja.", __LINE__);
 		return -1;
 	}
 
@@ -52,7 +52,7 @@ function uporabnik_dodaj()
 
 	if (!mysqli_query($zbirka, $poizvedba)) {
 		http_response_code(500);
-		json_odgovor("Kriterij vseh potrebnih vnosov ni zadoščen", 33);
+		json_odgovor("Kriterij vseh potrebnih vnosov ni zadoščen", __LINE__);
 		return -1;
 	}
 

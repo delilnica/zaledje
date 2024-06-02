@@ -32,6 +32,13 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
 
   Prijavi (avtorizira) uporabnika in vrne JWT žeton za tekočo sejo.
 
+  Možni odzivi:
+
+  - 200: prijava uspešna, priložena je vrednost žetona
+  - 404: uporabnik ne obstaja
+  - 401: napačno geslo
+  - 401: neveljaven žeton
+
 
 * `/register.php`, **POST** (`uporabnik_dodaj()`), s parametri:
 
@@ -40,6 +47,12 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
   - `geslo` (niz): geslo v čistopisu
 
   Doda novega uporabnika.
+
+  Možni odzivi:
+
+  - 201: registracija uspešna
+  - 400: manjkajoča polja
+  - 500: uporabnik že obstaja/notranja napaka
 
 
 * `/fragment.php`, **GET** (`fragment_seznam_vseh()`), brez parametrov.
@@ -57,6 +70,11 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
   Pridobi vsebino in metapodatke zahtevanega fragmenta. Če uporabnik *ni* prijavljen,
   so dostopni le javni fragmenti, sicer vsi.
 
+  Možni odzivi:
+
+  - 200: poizvedba uspešna, priložen je seznam
+  - 404: fragmentov ni
+
 
 * `/fragment.php`, **POST** (`fragment_dodaj()`).
 
@@ -67,11 +85,16 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
 
   Opcijski parameter:
 
-  - `ip` (niz): IP-naslov
   - `zaseben` (logična vred.): zasebnost fragmenta (glej opis)
 
   Doda nov fragment. Če je uporabnik prijavljen, je lahko zaseben, sicer vselej javen.
   (TODO nalaganje datotek)
+
+  Možni odzivi:
+
+  - 201: fragment dodan
+  - 400: manjkajoča polja
+  - 500: notranja napaka
 
 
 * `/admin.php`, **GET** (`uporabnik_seznam_vseh()`), brez parametrov.
