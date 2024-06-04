@@ -18,6 +18,11 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 		fragment_dodaj();
 		break;
 
+	case "OPTIONS":
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Headers: Authorization');
+		break;
+
 	default:
 		http_response_code(405); // Method not allowed
 		break;
@@ -176,6 +181,7 @@ function fragment_dodaj()
 	}
 
 	http_response_code(201); // Created
+	header('Access-Control-Allow-Origin: *');
 	json_odgovor($oznaka);
 	return 0;
 }
