@@ -57,5 +57,6 @@ function uporabnik_dodaj()
 	}
 
 	http_response_code(201); // Created
+	header('Access-Control-Allow-Origin: *');
 	return 0; // TODO ID uporabnika?
 }

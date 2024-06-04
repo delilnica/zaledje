@@ -42,6 +42,7 @@ function pridobi_zbirko()
  */
 function json_odgovor($vsebina, $koda=0)
 {
+	header('Access-Control-Allow-Origin: *');
 	header('Content-Type: application/json');
 	$odgovor = [
 		"status"   => $koda,
