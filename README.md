@@ -35,9 +35,10 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
   Možni odzivi:
 
   - 200: prijava uspešna, priložena je vrednost žetona
-  - 404: uporabnik ne obstaja
+  - 400: manjkajoča polja
   - 401: napačno geslo
   - 401: neveljaven žeton
+  - 404: uporabnik ne obstaja
 
 
 * `/register.php`, **POST** (`uporabnik_dodaj()`), s parametri:
