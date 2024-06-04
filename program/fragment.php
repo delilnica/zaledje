@@ -130,6 +130,18 @@ function fragment_dodaj()
 	$besedilo = mysqli_escape_string($zbirka, $vhod["besedilo"]);
 	$je_zaseben = 0;
 
+	if (strlen($ime) < 1 || strlen($besedilo) < 1) {
+		http_response_code(400); // Bad Request
+		json_odgovor("Ničelna dolžina polj je neveljavna.", __LINE__);
+		return -1;
+	}
+
+	if ($uid == 0 && (strlen($ime) > 40 || strlen($besedilo) > 2000)) {
+		http_response_code(400); // Bad Request
+		json_odgovor("Anonimni uporabniki imajo dolžinsko omejitev.", __LINE__);
+		return -1;
+	}
+
 	if ($uid > 0) { // Uporabnik je prijavljen, dovoli zasebno objavo
 		$je_zaseben = isset($vhod["zaseben"]) ? 1 : 0;
 	}

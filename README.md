@@ -94,7 +94,7 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
   Možni odzivi:
 
   - 201: fragment dodan
-  - 400: manjkajoča polja
+  - 400: manjkajoča, ničelna ali predolga polja (slednje za neprijavljene)
   - 500: notranja napaka
 
 
