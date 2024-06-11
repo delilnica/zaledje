@@ -28,7 +28,6 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 		break;
 }
 
-// mysqli_close
 
 /*!
  * @param $o alfanumerična oznaka fragmenta
@@ -37,7 +36,6 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 function fragment_iz_oznake($o)
 {
 	global $zbirka;
-	// $odgovor = [];
 
 	$oznaka = mysqli_escape_string($zbirka, $o);
 
@@ -92,7 +90,7 @@ function fragment_seznam_vseh()
 
 	if ($n_vrstic < 1) {
 		http_response_code(404);
-		json_odgovor("Fragmentov ni.", 2);
+		json_odgovor("Fragmentov ni.", __LINE__);
 		return -1;
 	}
 
