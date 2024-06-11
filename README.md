@@ -63,6 +63,11 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
 
   Če uporabnik *je* prijavljen, izpiše tudi zasebne.
 
+  Možna odziva:
+
+  - 200: izpis uspešen
+  - 404: fragmentov ni
+
 
 * `/fragment.php`, **GET** (`fragment_iz_oznake()`), s parametrom:
 
@@ -71,7 +76,7 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
   Pridobi vsebino in metapodatke zahtevanega fragmenta. Če uporabnik *ni* prijavljen,
   so dostopni le javni fragmenti, sicer vsi.
 
-  Možni odzivi:
+  Možna odziva:
 
   - 200: poizvedba uspešna, priložen je seznam
   - 404: fragmentov ni
