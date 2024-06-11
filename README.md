@@ -82,25 +82,34 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
   - 404: fragmentov ni
 
 
-* `/fragment.php`, **POST** (`fragment_dodaj()`).
+* `/fragment.php`, **POST**, lahko:
 
-  Pričakovana parametra:
+  + Doda nov fragment (`fragment_dodaj()`):
 
-  - `ime` (niz): ime fragmenta
-  - `besedilo` (niz): besedilo fragmenta
+    Pričakovana parametra:
 
-  Opcijski parameter:
+    - `ime` (niz): ime fragmenta
+    - `besedilo` (niz): besedilo fragmenta
 
-  - `zaseben` (logična vred.): zasebnost fragmenta (glej opis)
+    Opcijski parameter:
 
-  Doda nov fragment. Če je uporabnik prijavljen, je lahko zaseben, sicer vselej javen.
-  (TODO nalaganje datotek)
+    - `zaseben` (logična vred.): zasebnost fragmenta (glej opis)
 
-  Možni odzivi:
+    Če je uporabnik prijavljen, je lahko zaseben, sicer vselej javen.
+    (TODO nalaganje datotek)
 
-  - 201: fragment dodan
-  - 400: manjkajoča, ničelna ali predolga polja (slednje za neprijavljene)
-  - 500: notranja napaka
+    Možni odzivi:
+
+    - 201: fragment dodan
+    - 400: manjkajoča, ničelna ali predolga polja (slednje za neprijavljene)
+    - 500: notranja napaka
+
+  + Odstrani obstoječ fragment (`fragment_izbrisi()`):
+
+    Pričakovana parametra:
+
+    - `izbris`, nastavljen na katerokoli vrednost (npr. _true_)
+    - `uid` (število): ID fragmenta, *ne njegova oznaka*
 
 
 * `/admin.php`, **GET** (`uporabnik_seznam_vseh()`), brez parametrov.
@@ -117,7 +126,7 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
 
 * `/admin.php`, **POST**, lahko, če je uporabnik prijavljen in ima administratorske pravice:
 
-  + Uredi obstoječega uporabnika (`uporabnik_dodaj()`):
+  + Uredi obstoječega uporabnika (`uporabnik_posodobi()`):
 
     Pričakovan parameter:
 
@@ -128,6 +137,13 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
     - `admin` (logična vred.): nastavi uporabnika kot administratorja
 
     Potreben je vsaj en opcijski parameter.
+
+  + Izbriše obstoječega uporabnika (`uporabnik_izbrisi()`):
+
+    Pričakovana parametra:
+
+    - `izbris`, nastavljen na katerokoli vrednost (npr. _true_)
+    - `uid` (število): ID uporabnika
 
 
 ## Vzpostavitev sistema

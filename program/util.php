@@ -137,11 +137,16 @@ function jwt_validiraj($zeton)
 function idu()
 {
 	$headers = apache_request_headers();
+	$auth = "";
 
-	if (!isset($headers["Authorization"]))
+	if (isset($headers["Authorization"]))
+		$auth = $headers["Authorization"];
+	elseif (isset($headers["authorization"]))
+		$auth = $headers["authorization"];
+	else
 		return 0;
 
-	$validiraj = jwt_validiraj($headers["Authorization"]);
+	$validiraj = jwt_validiraj($auth);
 
 	if ($validiraj == -1)
 		return -1;

@@ -16,11 +16,15 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 		break;
 
 	case 'POST':
-		uporabnik_posodobi();
+		uporabnik();
+		break;
+
+	case "OPTIONS":
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Headers: Authorization');
 		break;
 
 	default:
-		// http_response_code(400); // ‘Bad Request’
 		http_response_code(405); // Method not allowed
 		break;
 }
@@ -38,9 +42,9 @@ function uporabnik_seznam_vseh()
 		http_response_code(401);
 		json_odgovor("Niste avtorizirani", __LINE__);
 		return -1;
-	} else {
-		return -1;
-	}
+	} /*else {
+		return -1; TODO
+	}*/
 
 	$poizvedba = "SELECT id, vzdevek, enaslov, datum_reg, admin FROM uporabnik;";
 	$rez = mysqli_query($zbirka, $poizvedba);
@@ -99,16 +103,16 @@ function uporabnik_iz_id($id)
 	return 0;
 }
 
-// function uporabnik()
-// {
-// 	$vhod = json_decode(file_get_contents("php://input"), true);
-//
-// 	if (isset($vhod["id"])) {
-// 		uporabnik_posodobi($vhod);
-// 	} else {
-// 		uporabnik_dodaj($vhod);
-// 	}
-// }
+function uporabnik()
+{
+	$vhod = json_decode(file_get_contents("php://input"), true);
+
+	if (isset($vhod["izbris"], $vhod["id"])) {
+		uporabnik_izbrisi($vhod["id"]);
+	} else {
+		uporabnik_posodobi($vhod);
+	}
+}
 
 /*!
  * @param POST vzdevek, enaslov, geslo, admin
@@ -183,7 +187,24 @@ function uporabnik_posodobi()
 	return 0;
 }
 
+function uporabnik_izbrisi($id)
+{
+	global $zbirka;
 
+	if (!je_admin()) {
+		http_response_code(401);
+		json_odgovor("Potrebujete administratorske pravice", __LINE__);
+		return -1;
+	}
+
+	$id = mysqli_escape_string($zbirka, $id);
+	$poizvedba = "DELETE FROM uporabnik WHERE id = '$id';";
+	$rez = mysqli_query($zbirka, $poizvedba);
+
+	http_response_code(204); // OK With No Content
+	header('Access-Control-Allow-Origin: *');
+	return 0;
+}
 
 
 ?>

@@ -15,7 +15,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 		break;
 
 	case 'POST':
-		fragment_dodaj();
+		fragment();
 		break;
 
 	case "OPTIONS":
@@ -104,6 +104,17 @@ function fragment_seznam_vseh()
 	return 0;
 }
 
+function fragment()
+{
+	$vhod = json_decode(file_get_contents("php://input"), true);
+
+	if (isset($vhod["izbris"], $vhod["id"])) {
+		fragment_izbrisi($vhod["id"]);
+	} else {
+		fragment_dodaj($vhod);
+	}
+}
+
 /*!
  * @param POST ime, besedilo, [zaseben]
  * @return 0 ob uspehu, -1 ob napaki
@@ -181,6 +192,25 @@ function fragment_dodaj()
 	http_response_code(201); // Created
 	header('Access-Control-Allow-Origin: *');
 	json_odgovor($oznaka);
+	return 0;
+}
+
+function fragment_izbrisi($id)
+{
+	global $zbirka;
+
+	if (!je_admin()) {
+		http_response_code(401);
+		json_odgovor("Potrebujete administratorske pravice", __LINE__);
+		return -1;
+	}
+
+	$id = mysqli_escape_string($zbirka, $id);
+	$poizvedba = "DELETE FROM fragment WHERE id = '$id';";
+	$rez = mysqli_query($zbirka, $poizvedba);
+
+	http_response_code(204); // OK With No Content
+	header('Access-Control-Allow-Origin: *');
 	return 0;
 }
 
