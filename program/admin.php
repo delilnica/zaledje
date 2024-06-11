@@ -174,7 +174,11 @@ function uporabnik_posodobi()
 		$geslo = $odgovor["geslo"];
 	}
 
-	$admin = isset($vhod["admin"]) ? 1 : 0;
+	if (isset($vhod["admin"])) {
+		$admin = ($odgovor["admin"] == 1) ? 0 : 1;
+	} else {
+		$admin = $odgovor["admin"];
+	}
 
 	$poizvedba = "UPDATE uporabnik SET vzdevek = '$vzdevek', enaslov = '$enaslov', geslo = '$geslo', admin = '$admin' WHERE id = '$id';";
 	if (!mysqli_query($zbirka, $poizvedba)) {
@@ -184,6 +188,7 @@ function uporabnik_posodobi()
 	}
 
 	http_response_code(204); // OK With No Content
+	header('Access-Control-Allow-Origin: *');
 	return 0;
 }
 
