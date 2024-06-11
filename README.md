@@ -91,12 +91,12 @@ Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
     - `ime` (niz): ime fragmenta
     - `besedilo` (niz): besedilo fragmenta
 
-    Opcijski parameter:
+    Opcijska parametra:
 
     - `zaseben` (logična vred.): zasebnost fragmenta (glej opis)
+    - `datoteka` (niz): vsebina datoteke, kodirana v zapisu _base64_
 
     Če je uporabnik prijavljen, je lahko zaseben, sicer vselej javen.
-    (TODO nalaganje datotek)
 
     Možni odzivi:
 

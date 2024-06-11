@@ -15,6 +15,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 		break;
 
 	case 'POST':
+		header('Access-Control-Allow-Origin: *');
 		fragment();
 		break;
 
@@ -58,6 +59,17 @@ function fragment_iz_oznake($o)
 
 	while ($v = mysqli_fetch_assoc($rez)) {
 		$odgovor = $v;
+	}
+
+	if ($odgovor["did"] != NULL) {
+		$did = $odgovor["did"];
+		$poizvedba_dat = "SELECT uri FROM datoteka WHERE id = '$did'";
+		$rez = mysqli_query($zbirka, $poizvedba_dat);
+		if ($rez) {
+			while ($v = mysqli_fetch_assoc($rez)) {
+				$odgovor += $v;
+			}
+		}
 	}
 
 	http_response_code(200);
@@ -122,6 +134,7 @@ function fragment()
 function fragment_dodaj()
 {
 	global $zbirka;
+	header('Access-Control-Allow-Origin: *');
 
 	$vhod = json_decode(file_get_contents("php://input"), true);
 	// var_dump($vhod); exit();
@@ -143,6 +156,7 @@ function fragment_dodaj()
 	$ime = mysqli_escape_string($zbirka, $vhod["ime"]);
 	$besedilo = mysqli_escape_string($zbirka, $vhod["besedilo"]);
 	$je_zaseben = 0;
+	$did = 0;
 
 	if (strlen($ime) < 1 || strlen($besedilo) < 1) {
 		http_response_code(400); // Bad Request
@@ -157,31 +171,49 @@ function fragment_dodaj()
 	}
 
 	if ($uid > 0) { // Uporabnik je prijavljen, dovoli zasebno objavo
-		$je_zaseben = isset($vhod["zaseben"]) ? 1 : 0;
+		$je_zaseben = $vhod["zaseben"];
 	}
 
-	// $did
-	// if (isset($vhod["datoteka"])) {
-	// 	$imenik = "/shramba";
-	// 	$dat = $imenik . basename($_FILES["datoteka"]["name"]);
-	// 	// $vhod["datoteka"];
- //
-	// 	if (file_exists($dat)) {
-	// 		json_odgovor("Datoteka že obstaja");
-	// 		return -1;
-	// 	}
- //
-	// 	echo "$dat";
- //
-	// 	if (move_uploaded_file($_FILES["datoteka"]["name"], $dat)) {
-	// 		echo "Uspeh";
-	// 	} else {
-	// 		echo "Neuspeh";
-	// 	}
- //
-	// }
+	if (isset($vhod["datoteka"])) {
+		$imenik = "/var/www/html/shramba/";
+		// $dat = $imenik . basename($_FILES["datoteka"]["name"]);
+		$bas = basename($oznaka);
+		$dat = $imenik . $bas;
+		// $vhod["datoteka"];
 
-	$poizvedba = "INSERT INTO fragment (oznaka, uid, ip, ime, besedilo, je_zaseben, did) VALUES ('$oznaka', '$uid', '$ip', '$ime', '$besedilo', '$je_zaseben', NULL)";
+		if (file_exists($dat)) {
+			json_odgovor("Datoteka že obstaja");
+			return -1;
+		}
+
+		// error_log($dat);
+
+		// if (move_uploaded_file($_FILES["datoteka"]["name"], $dat)) {
+		// 	echo "Uspeh";
+		// } else {
+		// 	echo "Neuspeh";
+		// }
+		if (!file_put_contents($dat, file_get_contents($vhod["datoteka"]))) {;
+			// error_log("napaka pri nalaganju");
+			return -1;
+		}
+		// error_log("nalozeno");
+
+		$poizvedba = "INSERT INTO datoteka (uid, uri) VALUES ('$uid', '$bas');";
+
+		if (mysqli_query($zbirka, $poizvedba)) {
+			$did = mysqli_insert_id($zbirka);
+			// error_log("did: $did");
+		} else {
+			// error_log("ne gre");
+			http_response_code(500);
+			json_odgovor("Napaka pri 'did'.", __LINE__);
+			return -1;
+		}
+		$poizvedba = "INSERT INTO fragment (oznaka, uid, ip, ime, besedilo, je_zaseben, did) VALUES ('$oznaka', '$uid', '$ip', '$ime', '$besedilo', '$je_zaseben', '$did')";
+	} else {
+		$poizvedba = "INSERT INTO fragment (oznaka, uid, ip, ime, besedilo, je_zaseben) VALUES ('$oznaka', '$uid', '$ip', '$ime', '$besedilo', '$je_zaseben')";
+	}
 
 	if (!mysqli_query($zbirka, $poizvedba)) {
 		http_response_code(500);
@@ -190,7 +222,7 @@ function fragment_dodaj()
 	}
 
 	http_response_code(201); // Created
-	header('Access-Control-Allow-Origin: *');
+
 	json_odgovor($oznaka);
 	return 0;
 }
@@ -206,15 +238,33 @@ function fragment_izbrisi($id)
 	}
 
 	$id = mysqli_escape_string($zbirka, $id);
+
+	$poizvedba = "SELECT did FROM fragment WHERE id = '$id'";
+	$rez = mysqli_query($zbirka, $poizvedba);
+	if ($rez) {
+		while ($v = mysqli_fetch_assoc($rez)) {
+			$odgovor = $v;
+		}
+
+		if ($odgovor["did"] != NULL) {
+			$did = $odgovor["did"];
+			$poizvedba = "DELETE FROM datoteka WHERE id = '$did'";
+			if (!mysqli_query($zbirka, $poizvedba)) {
+				http_response_code(500);
+				json_odgovor("Napaka pri brisanju datoteke: " . mysqli_error($zbirka), __LINE__);
+				return -1;
+			}
+		}
+	}
+
 	$poizvedba = "DELETE FROM fragment WHERE id = '$id';";
 	if (!mysqli_query($zbirka, $poizvedba)) {
 		http_response_code(500);
-		json_odgovor("Napaka pri posodobitvi: " . mysqli_error($zbirka), __LINE__);
+		json_odgovor("Napaka pri brisanju fragmenta: " . mysqli_error($zbirka), __LINE__);
 		return -1;
 	}
 
 	http_response_code(204); // OK With No Content
-	header('Access-Control-Allow-Origin: *');
 	return 0;
 }
 
