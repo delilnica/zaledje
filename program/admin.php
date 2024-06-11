@@ -204,7 +204,11 @@ function uporabnik_izbrisi($id)
 
 	$id = mysqli_escape_string($zbirka, $id);
 	$poizvedba = "DELETE FROM uporabnik WHERE id = '$id';";
-	$rez = mysqli_query($zbirka, $poizvedba);
+	if (!mysqli_query($zbirka, $poizvedba)) {
+		http_response_code(500);
+		json_odgovor("Napaka pri posodobitvi: " . mysqli_error($zbirka), __LINE__);
+		return -1;
+	}
 
 	http_response_code(204); // OK With No Content
 	header('Access-Control-Allow-Origin: *');
