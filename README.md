@@ -9,9 +9,11 @@ Zaledje Delilnice sestavljajo trije deli:
 Vsi delujejo v Dockerju, njihova postavitev pa je samodejna.
 
 
-## Pregled končnih točk
+## Komunikacija
 
-Vsi odgovori so v obliki JSON-kodiranega niza s sledečo strukturo:
+Prejemanje in pošiljanje podatkov poteka s HTTP zahtevki.
+
+Vsi odgovori zaledja so v obliki JSON-kodiranega niza s sledečo strukturo:
 
 ```json
 {
@@ -23,128 +25,7 @@ Vsi odgovori so v obliki JSON-kodiranega niza s sledečo strukturo:
 Razen če je navedeno drugače, je odgovor zapisan kot besedilni niz v
 polju `response`.
 
-Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh.
-
-* `/login.php`, **POST** (`uporabnik_prijava()`), s parametroma:
-
-  - `vzdevek` (niz): uporabnikov vzdevek/ime
-  - `geslo` (niz): uporabnikovo geslo
-
-  Prijavi (avtorizira) uporabnika in vrne JWT žeton za tekočo sejo.
-
-  Možni odzivi:
-
-  - 200: prijava uspešna, priložena je vrednost žetona
-  - 400: manjkajoča polja
-  - 401: napačno geslo
-  - 401: neveljaven žeton
-  - 404: uporabnik ne obstaja
-
-
-* `/register.php`, **POST** (`uporabnik_dodaj()`), s parametri:
-
-  - `vzdevek` (niz): enolični vzdevek
-  - `enaslov` (niz): e-poštni naslov
-  - `geslo` (niz): geslo v čistopisu
-
-  Doda novega uporabnika.
-
-  Možni odzivi:
-
-  - 201: registracija uspešna
-  - 400: manjkajoča polja
-  - 500: uporabnik že obstaja/notranja napaka
-
-
-* `/fragment.php`, **GET** (`fragment_seznam_vseh()`), brez parametrov.
-
-  Če uporabnik *ni* prijavljen, izpiše vsebino in metapodatke vseh javno-dostopnih
-  fragmentov.
-
-  Če uporabnik *je* prijavljen, izpiše tudi zasebne.
-
-  Možna odziva:
-
-  - 200: izpis uspešen
-  - 404: fragmentov ni
-
-
-* `/fragment.php`, **GET** (`fragment_iz_oznake()`), s parametrom:
-
-  - `o` (niz): oznaka fragmenta
-
-  Pridobi vsebino in metapodatke zahtevanega fragmenta. Če uporabnik *ni* prijavljen,
-  so dostopni le javni fragmenti, sicer vsi.
-
-  Možna odziva:
-
-  - 200: poizvedba uspešna, priložen je seznam
-  - 404: fragmentov ni
-
-
-* `/fragment.php`, **POST**, lahko:
-
-  + Doda nov fragment (`fragment_dodaj()`):
-
-    Pričakovana parametra:
-
-    - `ime` (niz): ime fragmenta
-    - `besedilo` (niz): besedilo fragmenta
-
-    Opcijska parametra:
-
-    - `zaseben` (logična vred.): zasebnost fragmenta (glej opis)
-    - `datoteka` (niz): vsebina datoteke, kodirana v zapisu _base64_
-
-    Če je uporabnik prijavljen, je lahko zaseben, sicer vselej javen.
-
-    Možni odzivi:
-
-    - 201: fragment dodan
-    - 400: manjkajoča, ničelna ali predolga polja (slednje za neprijavljene)
-    - 500: notranja napaka
-
-  + Odstrani obstoječ fragment (`fragment_izbrisi()`):
-
-    Pričakovana parametra:
-
-    - `izbris`, nastavljen na katerokoli vrednost (npr. _true_)
-    - `uid` (število): ID fragmenta, *ne njegova oznaka*
-
-
-* `/admin.php`, **GET** (`uporabnik_seznam_vseh()`), brez parametrov.
-
-  Pridobi metapodatke in število vseh uporabnikov. Potrebna je prijava.
-
-
-* `/admin.php`, **GET** (`uporabnik_iz_id()`), s parametrom:
-
-  - `id` (število): ID uporabnika
-
-  Pridobi metapodatke zahtevanega uporabnika. Potrebna je prijava.
-
-
-* `/admin.php`, **POST**, lahko, če je uporabnik prijavljen in ima administratorske pravice:
-
-  + Uredi obstoječega uporabnika (`uporabnik_posodobi()`):
-
-    Pričakovan parameter:
-
-    - `uid` (število): ID uporabnika
-
-    Opcijski parameteri so vsi tisti, ki so našteti pri registraciji, in:
-
-    - `admin` (logična vred.): nastavi uporabnika kot administratorja
-
-    Potreben je vsaj en opcijski parameter.
-
-  + Izbriše obstoječega uporabnika (`uporabnik_izbrisi()`):
-
-    Pričakovana parametra:
-
-    - `izbris`, nastavljen na katerokoli vrednost (npr. _true_)
-    - `uid` (število): ID uporabnika
-
+Vsem zahtevkom je postavljena HTTP koda glede na njihov uspeh. Posamezne končne točke in njihovi parametri so podrobno opisani na [samostojni strani](API.md).
 
 ## Vzpostavitev sistema
 
