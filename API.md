@@ -88,6 +88,19 @@ Opomba: funkcije v oklepajih so navedene le kot sklic na programsko kodo in za o
     - `izbris`, nastavljen na katerokoli vrednost (npr. _true_)
     - `uid` (število): ID fragmenta, *ne njegova oznaka*
 
+   + Nastavi zasebnost fragmenta (`fragment_zaseben()`):
+
+    Pričakovana parametra:
+
+    - `zasebnost`, nastavljen na katerokoli vrednost (npr. _true_)
+    - `o` (število): oznaka fragmenta
+
+    Možni odzivi:
+
+    - 204: operacija uspešna
+    - 401: administratorska avtorizacija neuspešna
+    - 500: notranja napaka pri nastavitvi
+
 
 * `/admin.php`, **GET** (`uporabnik_seznam_vseh()`), brez parametrov.
 

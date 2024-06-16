@@ -215,5 +215,4 @@ function uporabnik_izbrisi($id)
 	return 0;
 }
 
-
 ?>

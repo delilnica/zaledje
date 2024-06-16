@@ -120,7 +120,9 @@ function fragment()
 {
 	$vhod = json_decode(file_get_contents("php://input"), true);
 
-	if (isset($vhod["izbris"], $vhod["id"])) {
+	if (isset($vhod["zasebnost"], $vhod["id"])) {
+		fragment_zaseben($vhod["id"]);
+	} elseif (isset($vhod["izbris"], $vhod["id"])) {
 		fragment_izbrisi($vhod["id"]);
 	} else {
 		fragment_dodaj($vhod);
@@ -265,6 +267,41 @@ function fragment_izbrisi($id)
 	}
 
 	http_response_code(204); // OK With No Content
+	return 0;
+}
+
+function fragment_zaseben($id)
+{
+	global $zbirka;
+	$vhod = json_decode(file_get_contents("php://input"), true);
+
+	if (!je_admin()) {
+		http_response_code(401);
+		json_odgovor("Potrebujete administratorske pravice", __LINE__);
+		return -1;
+	}
+
+	$id = mysqli_escape_string($zbirka, $vhod["id"]);
+	$poizvedba = "SELECT je_zaseben FROM fragment WHERE id = '$id';";
+	$rez = mysqli_query($zbirka, $poizvedba);
+
+	if (mysqli_num_rows($rez) < 1) {
+		http_response_code(404);
+		json_odgovor("Fragment ne obstaja.", __LINE__);
+		return -1;
+	}
+
+	$odgovor = mysqli_fetch_assoc($rez);
+	$zaseben = ($odgovor["je_zaseben"] == 1) ? 0 : 1;
+
+	$poizvedba = "UPDATE fragment SET je_zaseben = '$zaseben' WHERE id = '$id'";
+	if (!mysqli_query($zbirka, $poizvedba)) {
+		http_response_code(500); // Ampak, ni nujno strežniška okvara
+		json_odgovor("Napaka pri posodobitvi: " . mysqli_error($zbirka), __LINE__);
+		return -1;
+	}
+
+	http_response_code(204);
 	return 0;
 }
 
