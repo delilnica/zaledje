@@ -19,7 +19,6 @@ services:
             - 81:80
         volumes:
             - ./program:/var/www/html
-            - ./shramba:/shramba
         restart: always
 
     mysql:
