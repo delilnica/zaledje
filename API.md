@@ -93,12 +93,24 @@ Opomba: funkcije v oklepajih so navedene le kot sklic na programsko kodo in za o
 
   Pridobi metapodatke in število vseh uporabnikov. Potrebna je prijava.
 
+  Možni odzivi:
+
+  - 200: poizvedba uspešna
+  - 401: avtorizacija neuspešna
+  - 404: uporabnikov ni
+
 
 * `/admin.php`, **GET** (`uporabnik_iz_id()`), s parametrom:
 
   - `id` (število): ID uporabnika
 
   Pridobi metapodatke zahtevanega uporabnika. Potrebna je prijava.
+
+  Možni odzivi:
+
+  - 200: poizvedba uspešna
+  - 401: administratorska avtorizacija neuspešna
+  - 404: uporabnikov ni
 
 
 * `/admin.php`, **POST**, lahko, če je uporabnik prijavljen in ima administratorske pravice:
@@ -115,9 +127,22 @@ Opomba: funkcije v oklepajih so navedene le kot sklic na programsko kodo in za o
 
     Potreben je vsaj en opcijski parameter.
 
+    Možni odzivi:
+
+    - 204: posodobitev uspešna
+    - 400: manjka ali `uid` ali kateri od opcijskih parametrov
+    - 401: administratorska avtorizacija neuspešna
+    - 500: notranja napaka pri posodobitvi
+
   + Izbriše obstoječega uporabnika (`uporabnik_izbrisi()`):
 
     Pričakovana parametra:
 
     - `izbris`, nastavljen na katerokoli vrednost (npr. _true_)
     - `uid` (število): ID uporabnika
+
+    Možni odzivi:
+
+    - 204: izbris uspešen
+    - 401: administratorska avtorizacija neuspešna
+    - 500: notranja napaka pri posodobitvi
